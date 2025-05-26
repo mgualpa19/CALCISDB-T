@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Calculadora de Tasa de Datos ISDB-T</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #b2dfdb; /* Fondo verde agua */
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            text-align: center;
+            padding: 20px;
+            background-color: #007BFF;
+            color: white;
+        }
+        header h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+        header p {
+            margin: 5px 0 0;
+            font-size: 18px;
+        }
+        main {
+            max-width: 800px;
+            margin: 20px auto;
+            background: white;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h2 {
+            text-align: center;
+            color: #007BFF;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: center;
+        }
+        th {
+            background-color: #f7f7f7;
+            color: #555;
+        }
+        .error {
+            background-color: #ffdddd;
+        }
+        .result {
+            font-weight: bold;
+            color: #444;
+        }
+        .input-group {
+            display: flex;
+            justify-content: space-between;
+            margin: 20px 0;
+        }
+        .input-group label {
+            margin-right: 10px;
+            color: #333;
+        }
+        .input-group select {
+            flex: 1;
+        }
+        button {
+            display: block;
+            width: 100%;
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 10px;
+            font-size: 16px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .hidden {
+            display: none;
+        }
+        .info {
+            text-align: left;
+            padding: 10px;
+            background-color: white;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>UNIVERSIDAD DE LAS FUERZAS ARMADAS ESPE</h1>
+        <p>Integrantes: Gualpa Mateo y Mendez Kevin</p>
+        <p>Asignatura: TDT</p>
+    </header>
+    <main>
+        <div id="welcome">
+            <h2>Bienvenidos</h2>
+            <p>Este programa nos ayudará a calcular la tasa de datos para el sistema ISDB-T. Ingrese los valores requeridos para cada capa y presione "Calcular".</p>
+            <button onclick="showCalculator()">Calcular</button>
+            <button onclick="showInfo()">Información</button>
+        </div>
+
+        <div id="calculator" class="hidden">
+            <h2>Calculadora de Tasa de Datos ISDB-T</h2>
+            <div class="input-group">
+                <label for="guardInterval">Tiempo de Guarda:</label>
+                <select id="guardInterval">
+                    <option value="0.25">1/4</option>
+                    <option value="0.125">1/8</option>
+                    <option value="0.0625" selected>1/16</option>
+                    <option value="0.03125">1/32</option>
+                </select>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>CAPA</th>
+                        <th>Número de Segmentos</th>
+                        <th>Modulación</th>
+                        <th>Tasa de Código</th>
+                        <th>Tasa de Datos (Mbps)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Capa A</td>
+                        <td><input type="number" id="segmentsA" value="1" min="0" max="13"></td>
+                        <td>
+                            <select id="modulationA">
+                                <option value="4">QPSK</option>
+                                <option value="16">16-QAM</option>
+                                <option value="64">64-QAM</option>
+                            </select>
+                        </td>
+                        <td>
+                            <select id="codingRateA">
+                                <option value="0.5">1/2</option>
+                                <option value="0.6667">2/3</option>
+                                <option value="0.75">3/4</option>
+                                <option value="0.8333">5/6</option>
+                                <option value="0.875">7/8</option>
+                            </select>
+                        </td>
+                        <td><span id="dataRateA"></span></td>
+                    </tr>
+                    <tr>
+                        <td>Capa B</td>
+                        <td><input type="number" id="segmentsB" value="12" min="0" max="13"></td>
+                        <td>
+                            <select id="modulationB">
+                                <option value="4">QPSK</option>
+                                <option value="16">16-QAM</option>
+                                <option value="64">64-QAM</option>
+                            </select>
+                        </td>
+                        <td>
+                            <select id="codingRateB">
+                                <option value="0.5">1/2</option>
+                                <option value="0.6667">2/3</option>
+                                <option value="0.75">3/4</option>
+                                <option value="0.8333">5/6</option>
+                                <option value="0.875">7/8</option>
+                            </select>
+                        </td>
+                        <td><span id="dataRateB"></span></td>
+                    </tr>
+                    <tr>
+                        <td>Capa C</td>
+                        <td><input type="number" id="segmentsC" value="0" min="0" max="13"></td>
+                        <td>
+                            <select id="modulationC">
+                                <option value="4">QPSK</option>
+                                <option value="16">16-QAM</option>
+                                <option value="64">64-QAM</option>
+                            </select>
+                        </td>
+                        <td>
+                            <select id="codingRateC">
+                                <option value="0.5">1/2</option>
+                                <option value="0.6667">2/3</option>
+                                <option value="0.75">3/4</option>
+                                <option value="0.8333">5/6</option>
+                                <option value="0.875">7/8</option>
+                            </select>
+                        </td>
+                        <td><span id="dataRateC"></span></td>
+                    </tr>
+                    <tr>
+                        <td colspan="4" class="result">Tasa Total (Mbps)</td>
+                        <td class="result"><span id="totalDataRate"></span></td>
+                    </tr>
+                </tbody>
+            </table>
+            <button onclick="calculateDataRates()">Calcular</button>
+            <button onclick="showWelcome()">Regresar</button>
+        </div>
+
+        <div id="info" class="hidden">
+            <h2>Información sobre el Sistema ISDB-T</h2>
+            <div class="info">
+                <h3>¿Qué es ISDB-T?</h3>
+                <p>ISDB-T (Integrated Services Digital Broadcasting-Terrestrial) es un estándar de transmisión de televisión digital terrestre desarrollado en Japón. Permite la transmisión de video, audio y datos en alta calidad a través de canales terrestres.</p>
+            </div>
+            <div class="info">
+                <h3>Tiempo de Guarda</h3>
+                <p>El tiempo de guarda se utiliza para evitar interferencias entre señales sucesivas. Los valores posibles son 1/4, 1/8, 1/16 y 1/32.</p>
+            </div>
+            <div class="info">
+                <h3>Capas</h3>
+                <p>El sistema ISDB-T utiliza tres capas de transmisión, denominadas A, B y C. Cada capa puede tener diferentes configuraciones de modulación y codificación.</p>
+            </div>
+            <div class="info">
+                <h3>Segmentos</h3>
+                <p>Los segmentos son unidades básicas de ancho de banda en el sistema ISDB-T. Cada capa puede utilizar de 0 a 13 segmentos.</p>
+            </div>
+            <div class="info">
+                <h3>Modulación</h3>
+                <p>La modulación es el proceso de convertir una señal digital en una señal de radiofrecuencia. En ISDB-T, se utilizan los siguientes tipos de modulación:
+                    <ul>
+                        <li>QPSK: 4 puntos en el diagrama de constelación.</li>
+                        <li>16-QAM: 16 puntos en el diagrama de constelación.</li>
+                        <li>64-QAM: 64 puntos en el diagrama de constelación.</li>
+                    </ul>
+                </p>
+            </div>
+            <div class="info">
+                <h3>Tasa de Código</h3>
+                <p>La tasa de código es la relación entre los bits de datos y los bits totales transmitidos. En ISDB-T, las tasas de código posibles son 1/2, 2/3, 3/4, 5/6 y 7/8.</p>
+            </div>
+            <div class="info">
+                <h3>Tasa de Datos</h3>
+                <p>La tasa de datos es la cantidad de información transmitida por segundo. Se calcula usando la fórmula: 
+                    <br>
+                    <code>Rs = (8 * log2(M) * rRS * rc) / (21 * (1 + alpha))</code>
+                    <br>
+                    Donde <code>rRS</code> es la tasa de código Reed-Solomon, <code>M</code> es la modulación, <code>rc</code> es la tasa de código convolucional y <code>alpha</code> es el tiempo de guarda.
+                </p>
+            </div>
+            <button onclick="showWelcome()">Regresar</button>
+        </div>
+    </main>
+    <script>
+        function showCalculator() {
+            document.getElementById('welcome').classList.add('hidden');
+            document.getElementById('info').classList.add('hidden');
+            document.getElementById('calculator').classList.remove('hidden');
+        }
+
+        function showInfo() {
+            document.getElementById('welcome').classList.add('hidden');
+            document.getElementById('calculator').classList.add('hidden');
+            document.getElementById('info').classList.remove('hidden');
+        }
+
+        function showWelcome() {
+            document.getElementById('calculator').classList.add('hidden');
+            document.getElementById('info').classList.add('hidden');
+            document.getElementById('welcome').classList.remove('hidden');
+        }
+
+        function calculateDataRates() {
+            const rRS = 188 / 204;
+            const alpha = parseFloat(document.getElementById('guardInterval').value);
+
+            let totalDataRate = 0;
+
+            function calculateLayerDataRate(layer) {
+                const segments = parseInt(document.getElementById('segments' + layer).value);
+                const M = parseInt(document.getElementById('modulation' + layer).value);
+                const rc = parseFloat(document.getElementById('codingRate' + layer).value);
+                const dataRateElement = document.getElementById('dataRate' + layer);
+
+                if (segments < 0 || segments > 13) {
+                    document.getElementById('segments' + layer).classList.add('error');
+                    dataRateElement.innerText = "No puedes asignar más de 13 segmentos";
+                    return 0;
+                } else {
+                    document.getElementById('segments' + layer).classList.remove('error');
+                    dataRateElement.innerText = "";
+                }
+
+                const Rs = (8 * Math.log2(M) * rRS * rc) / (21 * (1 + alpha));
+
+                if (isNaN(Rs)) {
+                    dataRateElement.innerText = "Error en los datos";
+                    document.getElementById('segments' + layer).classList.add('error');
+                    return 0;
+                } else {
+                    const layerDataRate = Rs * segments;
+                    dataRateElement.innerText = layerDataRate.toFixed(3);
+                    return layerDataRate;
+                }
+            }
+
+            const segmentsA = parseInt(document.getElementById('segmentsA').value);
+            const segmentsB = parseInt(document.getElementById('segmentsB').value);
+            const segmentsC = parseInt(document.getElementById('segmentsC').value);
+            const totalSegments = segmentsA + segmentsB + segmentsC;
+
+            if (totalSegments > 13) {
+                document.getElementById('segmentsA').classList.add('error');
+                document.getElementById('segmentsB').classList.add('error');
+                document.getElementById('segmentsC').classList.add('error');
+                alert("La suma de los segmentos no puede superar 13");
+                return;
+            } else {
+                document.getElementById('segmentsA').classList.remove('error');
+                document.getElementById('segmentsB').classList.remove('error');
+                document.getElementById('segmentsC').classList.remove('error');
+            }
+
+            totalDataRate += calculateLayerDataRate('A');
+            totalDataRate += calculateLayerDataRate('B');
+            totalDataRate += calculateLayerDataRate('C');
+
+            document.getElementById('totalDataRate').innerText = totalDataRate.toFixed(3);
+        }
+    </script>
+</body>
+</html>
